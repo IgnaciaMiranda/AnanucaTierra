@@ -39,6 +39,31 @@ func _physics_process(delta: float) -> void:
 	# Giro horizontal sencillo
 	if absf(velocity.x) > 1.0:
 		sprite.flip_h = velocity.x < 0.0
+	onready var anim_sprite = $AnimatedSprite2D
+
+	func _process(delta):
+		_update_animation()
+
+	func _update_animation():
+		if is_on_floor():
+			if velocity.x == 0:
+				anim_sprite.play("idle")
+			elif abs(velocity.x) > 200:
+				anim_sprite.play("run")
+			else:
+				anim_sprite.play("walk")
+		else:
+			if velocity.y < 0:
+				anim_sprite.play("jump")
+			elif velocity.y > 0:
+				anim_sprite.play("fall")
+
+	# Ejemplo para daño y muerte (debes llamar estas funciones cuando corresponda)
+	func play_hurt():
+		anim_sprite.play("hurt")
+
+	func play_death():
+		anim_sprite.play("death")
 
 # ─────────────────────────────────────────────────────────────
 # Helpers

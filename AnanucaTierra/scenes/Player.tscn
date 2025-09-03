@@ -7,7 +7,45 @@ script = ExtResource("1")
 collision_layer = 1
 collision_mask = 1
 
-[node name="Sprite" type="Sprite2D" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, 0)
+frames = SubResource(1)
+
+[sub_resource type="SpriteFrames" id="1"]
+# Configura las animaciones usando los PNG disponibles
+# Debes ajustar el tamaño de los frames en el editor según tu hoja de sprites
+animations = [
+	{
+		"name": "idle",
+		"frames": ["res://assets/player/idle.png"],
+		"loop": true
+	},
+	{
+		"name": "walk",
+		"frames": ["res://assets/player/walk.png"],
+		"loop": true
+	},
+	{
+		"name": "run",
+		"frames": ["res://assets/player/run.png"],
+		"loop": true
+	},
+	{
+		"name": "jump",
+		"frames": ["res://assets/player/jump.png"],
+		"loop": false
+	},
+	{
+		"name": "hurt",
+		"frames": ["res://assets/player/hurt.png"],
+		"loop": false
+	},
+	{
+		"name": "death",
+		"frames": ["res://assets/player/death.png"],
+		"loop": false
+	}
+]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
