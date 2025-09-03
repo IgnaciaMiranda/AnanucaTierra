@@ -66,6 +66,12 @@ func _ready() -> void:
 	if "inventory_ref" in player:
 		player.inventory_ref = inventory
 
+	# Conectar señales de World.gd al HUD
+	var world = $World
+	var hud = $HUD
+	world.connect("day_changed", hud, "update_day")
+	world.connect("season_changed", hud, "update_season")
+	world.connect("time_updated", hud, "update_time")
 	_update_hud()
 	set_physics_process(true)
 

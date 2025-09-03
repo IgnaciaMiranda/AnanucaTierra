@@ -17,6 +17,40 @@ enum TileId { AIR, DIRT, STONE, FARMLAND, SPROUT, FLOWER }
 
 # ─────────────────────────────────────────────────────────────
 # Estado
+extends Node2D
+
+# Ciclo de día/noche y estaciones
+var day_length := 600.0 # 10 minutos en segundos
+var current_time := 0.0
+var current_day := 1
+var current_season := "primavera" # primavera, verano, otoño, invierno
+var seasons := ["primavera", "verano", "otoño", "invierno"]
+var season_days := 5 # días por estación
+
+signal day_changed(current_day)
+signal season_changed(current_season)
+signal time_updated(current_time)
+
+func _ready():
+	set_process(true)
+
+func _process(delta):
+	current_time += delta
+	if current_time >= day_length:
+		current_time = 0
+		current_day += 1
+		_update_season()
+		emit_signal("day_changed", current_day)
+	# Actualiza la hora cada frame
+	emit_signal("time_updated", current_time)
+
+func _update_season():
+	var season_index = int((current_day - 1) / season_days) % seasons.size()
+	var new_season = seasons[season_index]
+	if new_season != current_season:
+		current_season = new_season
+		emit_signal("season_changed", current_season)
+	# Aquí puedes cambiar la apariencia del mundo según la estación
 # ─────────────────────────────────────────────────────────────
 var grid: Array = []                     # 2D: Array[Array[int]]
 var sprites: Array = []                  # 2D: Array[Array[Sprite2D]]
