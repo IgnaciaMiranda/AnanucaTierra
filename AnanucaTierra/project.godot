@@ -4,7 +4,7 @@
 ;
 ; Format:
 ;   [section] ; section goes between []
-;   param=value ; assign values to parameters
+;   [param=value] ; assign values to parameters
 
 config_version=5
 
@@ -70,3 +70,25 @@ slot_4={
 [rendering]
 
 environment/defaults/default_clear_color=Color(0.37, 0.63, 0.95, 1)
+
+[preset.0]
+name="Windows Desktop"
+platform="Windows Desktop"
+runnable=true
+dedicated_server=false
+custom_features=""
+export_filter="all_resources"
+include_filter=""
+exclude_filter=""
+export_path="Ananuca_Tierra_Flor.exe"  # SIN caracteres especiales
+application/icon=""
+application/file_version="1.0.0"
+application/product_version="1.0.0"
+application/company_name=""
+application/product_name="Ananuca Tierra Flor"  # SIN caracteres especiales
+application/file_description=""
+application/copyright=""
+application/trademarks=""
+binary_format/architecture="x86_64"
+codesign/enable=false
+application/modify_resources=false  # DESACTIVAR modificación de recursos
