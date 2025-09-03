@@ -31,7 +31,7 @@ func _physics_process(delta: float) -> void:
 	var desired_vel: Vector2 = input_dir * max_speed
 
 	# Acelera hacia desired_vel; si no hay input, aplica fricción hacia 0
-	var rate := accel if input_dir != Vector2.ZERO else friction
+	var rate: float = accel if input_dir != Vector2.ZERO else friction
 	velocity = velocity.move_toward(desired_vel, rate * delta)
 
 	move_and_slide()
@@ -44,29 +44,29 @@ func _physics_process(delta: float) -> void:
 # Helpers
 # ─────────────────────────────────────────────────────────────
 func _init_texture() -> void:
-	var w := max(1, sprite_size.x)
-	var h := max(1, sprite_size.y)
-	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var w: int = max(1, sprite_size.x)
+	var h: int = max(1, sprite_size.y)
+	var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
 	img.fill(body_color)
 
 	# Borde
 	for x in w:
 		for y in h:
-			var on_border := x < border_thickness \
+			var on_border: bool = x < border_thickness \
 				or y < border_thickness \
 				or x >= w - border_thickness \
 				or y >= h - border_thickness
 			if on_border:
 				img.set_pixel(x, y, border_color)
 
-	var tex := ImageTexture.create_from_image(img)
+	var tex: ImageTexture = ImageTexture.create_from_image(img)
 	sprite.texture = tex
 	sprite.centered = true
 	# Mantener pixel-art nítido (Godot 4)
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 func _init_collision() -> void:
-	var rect := RectangleShape2D.new()
+	var rect: RectangleShape2D = RectangleShape2D.new()
 	# La colisión igual al sprite
 	rect.size = Vector2(sprite_size)
 	col.shape = rect

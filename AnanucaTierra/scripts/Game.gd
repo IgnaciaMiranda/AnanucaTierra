@@ -56,8 +56,13 @@ func _ready() -> void:
 
 	player = load("res://scenes/Player.tscn").instantiate()
 	add_child(player)
+	
+	# FIXED: Separar la verificación de la asignación
 	if "get_spawn_position" in world:
-		player.global_position = world.get_spawn_position()
+		var spawn_pos: Vector2 = world.get_spawn_position()
+		player.global_position = spawn_pos
+	
+	# FIXED: También separar esta verificación
 	if "inventory_ref" in player:
 		player.inventory_ref = inventory
 
@@ -66,7 +71,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	# Avanza el tiempo independientemente del framerate
-	var prev_time := time_of_day
+	var prev_time: float = time_of_day
 	time_of_day = wrapf(time_of_day + time_scale_hours_per_sec * delta, 0.0, 24.0)
 
 	# Detecta amanecer real (cruce 24->0) para nuevo día
@@ -103,13 +108,13 @@ func _on_use_tool(pos: Vector2, primary: bool) -> void:
 	if world == null or !"world_to_cell" in world:
 		return
 
-	var cell = world.world_to_cell(pos)
+	var cell: Vector2i = world.world_to_cell(pos)
 
 	match selected_slot:
 		Slot.PICKAXE:
 			if !"mine" in world:
 				return
-			var got := world.mine(cell)
+			var got: String = world.mine(cell)
 			if typeof(got) == TYPE_STRING and got != "":
 				inventory[got] = int(inventory.get(got, 0)) + 1
 
@@ -164,7 +169,7 @@ func _update_quest() -> void:
 					world.spawn_spirit()
 		Quest.NIGHT_SPIRIT:
 			if "player_near_spirit" in world and world.player_near_spirit(player.global_position):
-				var have := int(inventory.get(ITEM_FLOWER_ANANUCA, 0))
+				var have: int = int(inventory.get(ITEM_FLOWER_ANANUCA, 0))
 				if have >= required_flowers:
 					inventory[ITEM_FLOWER_ANANUCA] = have - required_flowers
 					quest_state = Quest.COMPLETE
@@ -173,7 +178,7 @@ func _update_quest() -> void:
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 func _update_day_night_modulate() -> void:
-	var b := _brightness_for_time(time_of_day)
+	var b: float = _brightness_for_time(time_of_day)
 	canvas_modulate.color = Color(b, b, b, 1.0)
 
 func _brightness_for_time(t: float) -> float:

@@ -48,7 +48,7 @@ func _generate_textures() -> void:
 	tex_by_id[TileId.FLOWER]   = _make_color_tex(Color(0.90, 0.10, 0.20))
 
 func _make_color_tex(c: Color) -> Texture2D:
-	var img := Image.create(CELL, CELL, false, Image.FORMAT_RGBA8)
+	var img: Image = Image.create(CELL, CELL, false, Image.FORMAT_RGBA8)
 	img.fill(c)
 	# Borde inferior sutil
 	for x in CELL:
@@ -95,8 +95,8 @@ func cell_to_pos(c: Vector2i) -> Vector2:
 	return Vector2(c.x * CELL + CELL * 0.5, c.y * CELL + CELL * 0.5)
 
 func world_to_cell(p: Vector2) -> Vector2i:
-	var x := int(floor(p.x / CELL))
-	var y := int(floor(p.y / CELL))
+	var x: int = int(floor(p.x / CELL))
+	var y: int = int(floor(p.y / CELL))
 	return Vector2i(clamp(x, 0, W - 1), clamp(y, 0, H - 1))
 
 func _in_bounds(c: Vector2i) -> bool:
@@ -121,7 +121,7 @@ func _update_cell_visual(c: Vector2i) -> void:
 	if not _in_bounds(c):
 		return
 	var v: int = grid[c.y][c.x]
-	var s := _ensure_sprite(c)
+	var s: Sprite2D = _ensure_sprite(c)
 	var tex: Texture2D = tex_by_id.get(v, null)
 	s.texture = tex
 
@@ -142,7 +142,7 @@ func mine(c: Vector2i) -> String:
 			_update_cell_visual(c)
 			return "piedra"
 		TileId.SPROUT, TileId.FLOWER:
-			var item := "flor_ananuca" if v == TileId.FLOWER else ""
+			var item: String = "flor_ananuca" if v == TileId.FLOWER else ""
 			grid[c.y][c.x] = TileId.AIR
 			_update_cell_visual(c)
 			return item
@@ -189,7 +189,7 @@ func new_day() -> void:
 				_update_cell_visual(Vector2i(x, y))
 
 func count_flowers() -> int:
-	var n := 0
+	var n: int = 0
 	for y in H:
 		for x in W:
 			if grid[y][x] == TileId.FLOWER:
@@ -206,17 +206,17 @@ func spawn_spirit() -> void:
 	add_child(spirit_node)
 
 	# Centro desplazado
-	var c := Vector2i(W / 2 + 3, H / 2 + 1)
+	var c: Vector2i = Vector2i(W / 2 + 3, H / 2 + 1)
 	spirit_pos = cell_to_pos(c)
 
 	# Halo (ligero y barato)
-	var halo := ColorRect.new()
+	var halo: ColorRect = ColorRect.new()
 	halo.color = Color(1, 0, 0, 0.25)
 	halo.size = Vector2(CELL * 2, CELL * 2)
 	halo.position = spirit_pos - halo.size * 0.5
 	spirit_node.add_child(halo)
 
-	var label := Label.new()
+	var label: Label = Label.new()
 	label.text = "Espíritu de Añañuca"
 	label.position = spirit_pos + Vector2(-80, -32)
 	spirit_node.add_child(label)
