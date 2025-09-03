@@ -1,0 +1,11 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1756938710
+export_presets.cfg::TextFile/TextFile::-1::1756938649::0::1::::<><><>0<>0<><>::
+README.md::TextFile/TextFile::-1::1756938649::0::1::::<><><>0<>0<><>::
+::res://scenes/::1756938649
+Game.tscn::PackedScene::7851957265965471842::1756938711::0::1::::<><><>0<>0<><>::uid://cq3cmonhi66p0::::res://scripts/Game.gd
+Player.tscn::PackedScene::460991815811809499::1756938711::0::1::::<><><>0<>0<><>::uid://nv0n2pyu5jgh::::res://scripts/Player.gd
+::res://scripts/::1756938649
+Game.gd::GDScript/GDScript::5953809061960138539::1756938649::0::1::::<>Node2D<><>0<>0<><>::
+Player.gd::GDScript/GDScript::957349482690488295::1756938649::0::1::::<>CharacterBody2D<><>0<>0<><>::
+World.gd::GDScript/GDScript::611488675500321412::1756938649::0::1::::<>Node2D<><>0<>0<><>::

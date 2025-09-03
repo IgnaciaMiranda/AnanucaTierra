@@ -1,0 +1,72 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Añañuca: Tierra Flor"
+run/main_scene="res://scenes/Game.tscn"
+config/features=PackedStringArray("4.4")
+boot_splash/show_image=false
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[input]
+
+action_mine={
+"deadzone": 0.5,
+"events": [{
+"button_index": 1,
+"device": -1,
+"type": "mouse_button"
+}]
+}
+action_place={
+"deadzone": 0.5,
+"events": [{
+"button_index": 2,
+"device": -1,
+"type": "mouse_button"
+}]
+}
+slot_1={
+"deadzone": 0.5,
+"events": [{
+"keycode": 49,
+"type": "key"
+}]
+}
+slot_2={
+"deadzone": 0.5,
+"events": [{
+"keycode": 50,
+"type": "key"
+}]
+}
+slot_3={
+"deadzone": 0.5,
+"events": [{
+"keycode": 51,
+"type": "key"
+}]
+}
+slot_4={
+"deadzone": 0.5,
+"events": [{
+"keycode": 52,
+"type": "key"
+}]
+}
+
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.37, 0.63, 0.95, 1)
