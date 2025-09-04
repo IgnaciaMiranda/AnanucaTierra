@@ -1,16 +1,14 @@
 extends Node2D
 
 # Ciclo de crecimiento de la Añañuca
-var state := "semilla" # semilla, brote, pequeña, adulta, florecida
-var days_in_state := 0
-var needs_water := true
+var state: String = "semilla" # semilla, brote, pequeña, adulta, florecida
+var days_in_state: int = 0
+var needs_water: bool = true
 
 signal grew(new_state)
 
-onready var particles = $Particles2D setget _set_particles
+@onready var particles = $Particles2D
 
-func _set_particles(value):
-	particles = value
 
 func _process(delta):
 	if state == "florecida" and _is_night():
@@ -29,12 +27,8 @@ func _is_night():
 func _ready():
 	set_process(true)
 
-func _process(delta):
-	# Aquí se puede conectar con el sistema de día/noche
-	pass
-
 func water():
-	needs_water = false
+	needs_water = false 
 
 func advance_growth():
 	if state == "semilla":

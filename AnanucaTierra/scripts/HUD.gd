@@ -1,11 +1,11 @@
 extends CanvasLayer
 
 # Referencias a los nodos UI
-onready var lbl_day = $DayLabel
-onready var lbl_season = $SeasonLabel
-onready var lbl_time = $TimeLabel
-onready var lbl_inventory = $InventoryLabel
-onready var lbl_objective = $ObjectiveLabel
+@onready var lbl_day = $DayLabel
+@onready var lbl_season = $SeasonLabel
+@onready var lbl_time = $TimeLabel
+@onready var lbl_inventory = $InventoryLabel
+@onready var lbl_objective = $ObjectiveLabel
 
 # Ejemplo de conexión de señales desde World.gd
 # world.connect("day_changed", self, "update_day")
@@ -24,7 +24,7 @@ func update_season(season):
 func update_time(time):
 	var minutes = int(time / 60)
 	var seconds = int(time) % 60
-	lbl_time.text = "Hora: %02d:%02d" % [minutes, seconds]
+	#lbl_time.text = "Hora: %02d:%02d" % [minutes, seconds]
 
 func update_inventory(items: Dictionary):
 	var text = "Inventario:\n"

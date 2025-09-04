@@ -29,8 +29,8 @@ const DAY_BRIGHTNESS   := 1.0
 # Nodos
 # ─────────────────────────────────────────────────────────────────────────────
 @onready var canvas_modulate: CanvasModulate = $CanvasModulate
-@onready var info_label: Label = $UI/HUD/Info
-@onready var quest_label: Label = $UI/HUD/Quest
+@onready var info_label: Label = $HUD/Info
+@onready var quest_label: Label = $HUD/Quest
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Estado
@@ -51,7 +51,7 @@ var quest_state: int = Quest.START
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	# Crea mundo y jugador
-	world = preload("res://scripts/World.gd").new()
+	world = load("res://scenes/World.tscn").instantiate()
 	add_child(world)
 
 	player = load("res://scenes/Player.tscn").instantiate()
@@ -66,12 +66,11 @@ func _ready() -> void:
 	if "inventory_ref" in player:
 		player.inventory_ref = inventory
 
-	# Conectar señales de World.gd al HUD
-	var world = $World
+	# Conectar señales de World al HUD
 	var hud = $HUD
-	world.connect("day_changed", hud, "update_day")
-	world.connect("season_changed", hud, "update_season")
-	world.connect("time_updated", hud, "update_time")
+	world.connect("day_changed", Callable(hud, "update_day"))
+	world.connect("season_changed", Callable(hud, "update_season"))
+	world.connect("time_updated", Callable(hud, "update_time"))
 	_update_hud()
 	set_physics_process(true)
 
@@ -121,7 +120,7 @@ func _on_use_tool(pos: Vector2, primary: bool) -> void:
 			if !"mine" in world:
 				return
 			var got: String = world.mine(cell)
-			if typeof(got) == TYPE_STRING and got != "":
+			if got != "":
 				inventory[got] = int(inventory.get(got, 0)) + 1
 
 		Slot.DIRT:

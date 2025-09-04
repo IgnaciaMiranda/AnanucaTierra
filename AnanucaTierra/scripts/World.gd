@@ -16,8 +16,6 @@ enum TileId { AIR, DIRT, STONE, FARMLAND, SPROUT, FLOWER }
 @export_range(0.0, 1.0, 0.05) var growth_chance_per_day: float = 1.0  # 1.0 = siempre crece
 
 # ─────────────────────────────────────────────────────────────
-# Estado
-extends Node2D
 
 # Ciclo de día/noche y estaciones
 var day_length := 600.0 # 10 minutos en segundos
@@ -31,8 +29,14 @@ signal day_changed(current_day)
 signal season_changed(current_season)
 signal time_updated(current_time)
 
-func _ready():
+
+func _ready() -> void:
 	set_process(true)
+	rng.randomize()
+	_generate_textures()
+	_init_world_arrays()
+	_generate_world()
+	_draw_world()
 
 func _process(delta):
 	current_time += delta
@@ -63,12 +67,12 @@ var spirit_pos := Vector2.ZERO
 # ─────────────────────────────────────────────────────────────
 # Ciclo de vida
 # ─────────────────────────────────────────────────────────────
-func _ready() -> void:
-	rng.randomize()
-	_generate_textures()
-	_init_world_arrays()
-	_generate_world()
-	_draw_world()
+# func _ready() -> void:
+# 	rng.randomize()
+# 	_generate_textures()
+# 	_init_world_arrays()
+# 	_generate_world()
+# 	_draw_world()
 
 # ─────────────────────────────────────────────────────────────
 # Texturas

@@ -1,8 +1,8 @@
 extends Area2D
 
 # Base para objetos recolectables
-export(String) var resource_type = "piedra"
-export(int) var amount = 1
+@export var resource_type: String = "piedra"
+@export var amount: int = 1
 
 signal collected(resource_type, amount)
 
