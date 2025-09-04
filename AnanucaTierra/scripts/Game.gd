@@ -119,6 +119,7 @@ func _on_use_tool(pos: Vector2, primary: bool) -> void:
 			if !"mine" in world:
 				return
 			var got: String = world.mine(cell)
+			print("Mined at %s, got: %s" % [cell, got])
 			if got != "":
 				inventory_node.add_item(got, 1)
 

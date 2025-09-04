@@ -7,16 +7,17 @@ const CELL: int = 16
 const W: int = 64
 const H: int = 40
 
-enum TileId { AIR, DIRT, STONE, FARMLAND, SPROUT, FLOWER }
+enum TileId {AIR, DIRT, STONE, FARMLAND, SPROUT, FLOWER}
 
 # ─────────────────────────────────────────────────────────────
 # Ajustes
 # ─────────────────────────────────────────────────────────────
 @export_range(0.0, 1.0, 0.05) var stone_chance: float = 1.0 / 7.0
-@export_range(0.0, 1.0, 0.05) var growth_chance_per_day: float = 1.0  # 1.0 = siempre crece
+@export_range(0.0, 1.0, 0.05) var growth_chance_per_day: float = 1.0 # 1.0 = siempre crece
 
 # ─────────────────────────────────────────────────────────────
 
+@onready var inventory = get_node("/root/Game/Inventory")
 # Ciclo de día/noche y estaciones
 var day_length := 600.0 # 10 minutos en segundos
 var current_time := 0.0
@@ -37,16 +38,39 @@ func _ready() -> void:
 	_init_world_arrays()
 	_generate_world()
 	_draw_world()
+	# Inicializa el inventario (ajusta la ruta si es necesario)
+	#inventory = get_node_or_null("/root/Inventory")
+	# Conecta la señal 'collected' de todos los recolectables
+	for collectable in get_tree().get_nodes_in_group("collectables"):
+		collectable.connect("collected", Callable(self, "_on_collectable_collected"))
+	# Asigna el nodo del jugador (ajusta la ruta si es necesario)
+	player = get_node_or_null("/root/Game/Player")
+# Espíritu
+# ─────────────────────────────────────────────────────────────
+func _on_collectable_collected(resource_type: String, amount: int) -> void:
+	if inventory:
+		inventory.add_item(resource_type, amount)
+		if resource_type == "flor_ananuca":
+			inventory.add_item("semilla_ananuca", 3)
 
 func _process(delta):
-	current_time += delta
-	if current_time >= day_length:
-		current_time = 0
-		current_day += 1
-		_update_season()
-		emit_signal("day_changed", current_day)
-	# Actualiza la hora cada frame
-	emit_signal("time_updated", current_time)
+		current_time += delta
+		if current_time >= day_length:
+			current_time = 0
+			current_day += 1
+			_update_season()
+			emit_signal("day_changed", current_day)
+		# Actualiza la hora cada frame
+		emit_signal("time_updated", current_time)
+
+		# Movimiento del espíritu hacia el jugador
+		if spirit_sprite and player:
+			var target_pos = player.global_position
+			var speed = 60.0 # píxeles por segundo
+			var direction = (target_pos - spirit_sprite.position)
+			if direction.length() > 2.0:
+				direction = direction.normalized()
+				spirit_sprite.position += direction * speed * delta
 
 func _update_season():
 	var season_index = int((current_day - 1) / season_days) % seasons.size()
@@ -56,13 +80,15 @@ func _update_season():
 		emit_signal("season_changed", current_season)
 	# Aquí puedes cambiar la apariencia del mundo según la estación
 # ─────────────────────────────────────────────────────────────
-var grid: Array = []                     # 2D: Array[Array[int]]
-var sprites: Array = []                  # 2D: Array[Array[Sprite2D]]
-var tex_by_id: Dictionary = {}           # TileId -> Texture2D (o null)
+var grid: Array = [] # 2D: Array[Array[int]]
+var sprites: Array = [] # 2D: Array[Array[Sprite2D]]
+var tex_by_id: Dictionary = {} # TileId -> Texture2D (o null)
 var rng := RandomNumberGenerator.new()
 
 var spirit_node: Node2D = null
 var spirit_pos := Vector2.ZERO
+var spirit_sprite: Sprite2D = null
+var player: Node2D = null
 
 # ─────────────────────────────────────────────────────────────
 # Ciclo de vida
@@ -78,12 +104,12 @@ var spirit_pos := Vector2.ZERO
 # Texturas
 # ─────────────────────────────────────────────────────────────
 func _generate_textures() -> void:
-	tex_by_id[TileId.AIR]      = null
-	tex_by_id[TileId.DIRT]     = _make_color_tex(Color(0.55, 0.35, 0.25))
-	tex_by_id[TileId.STONE]    = _make_color_tex(Color(0.45, 0.45, 0.50))
+	tex_by_id[TileId.AIR] = null
+	tex_by_id[TileId.DIRT] = _make_color_tex(Color(0.55, 0.35, 0.25))
+	tex_by_id[TileId.STONE] = _make_color_tex(Color(0.45, 0.45, 0.50))
 	tex_by_id[TileId.FARMLAND] = _make_color_tex(Color(0.45, 0.28, 0.18))
-	tex_by_id[TileId.SPROUT]   = _make_color_tex(Color(0.20, 0.70, 0.20))
-	tex_by_id[TileId.FLOWER]   = _make_color_tex(Color(0.90, 0.10, 0.20))
+	tex_by_id[TileId.SPROUT] = load("res://assets/other/sc_grow_plant_001_1.png")
+	tex_by_id[TileId.FLOWER] = load("res://assets/other/sc_grow_plant_001_2.png")
 
 func _make_color_tex(c: Color) -> Texture2D:
 	var img: Image = Image.create(CELL, CELL, false, Image.FORMAT_RGBA8)
@@ -145,7 +171,7 @@ func _in_bounds(c: Vector2i) -> bool:
 # ─────────────────────────────────────────────────────────────
 func _ensure_sprite(c: Vector2i) -> Sprite2D:
 	var s: Sprite2D = sprites[c.y][c.x]
-	if s: 
+	if s:
 		return s
 	s = Sprite2D.new()
 	add_child(s)
@@ -153,6 +179,14 @@ func _ensure_sprite(c: Vector2i) -> Sprite2D:
 	s.centered = true
 	s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprites[c.y][c.x] = s
+	# Si es sprout o flor, escala el sprite para que encaje en la celda
+	var v: int = grid[c.y][c.x]
+	if v == TileId.FLOWER or v == TileId.SPROUT:
+		var tex: Texture2D = tex_by_id.get(v, null)
+		if tex == null:
+			print("No se encontró la textura para TileId ", v)
+		else:
+			s.scale = Vector2(CELL / float(tex.get_width()), CELL / float(tex.get_height()))
 	return s
 
 func _update_cell_visual(c: Vector2i) -> void:
@@ -179,11 +213,21 @@ func mine(c: Vector2i) -> String:
 			grid[c.y][c.x] = TileId.AIR
 			_update_cell_visual(c)
 			return "piedra"
-		TileId.SPROUT, TileId.FLOWER:
-			var item: String = "flor_ananuca" if v == TileId.FLOWER else ""
+		TileId.SPROUT:
+			var item: String = "semilla_ananuca"
+			grid[c.y][c.x] = TileId.FARMLAND
+			_update_cell_visual(c)
+			# if item != "" and inventory:
+			# 	inventory.add_item(item, 1)
+			return item
+		TileId.FLOWER:
 			grid[c.y][c.x] = TileId.AIR
 			_update_cell_visual(c)
-			return item
+			# if inventory:
+			# 	inventory.add_item("flor_ananuca", 1)
+			if inventory:
+				inventory.add_item("semilla_ananuca", 3)
+			return "flor_ananuca"
 		_:
 			return ""
 
@@ -249,10 +293,17 @@ func spawn_spirit() -> void:
 
 	# Halo (ligero y barato)
 	var halo: ColorRect = ColorRect.new()
-	halo.color = Color(1, 0, 0, 0.25)
+	halo.color = Color(1, 0, 0, 0.15)
 	halo.size = Vector2(CELL * 2, CELL * 2)
 	halo.position = spirit_pos - halo.size * 0.5
 	spirit_node.add_child(halo)
+
+	# Sprite del espíritu
+	spirit_sprite = Sprite2D.new()
+	spirit_sprite.texture = load("res://assets/other/spirit.png") # Ajusta la ruta si es necesario
+	spirit_sprite.position = spirit_pos
+	spirit_sprite.centered = true
+	spirit_node.add_child(spirit_sprite)
 
 	var label: Label = Label.new()
 	label.text = "Espíritu de Añañuca"
@@ -267,4 +318,4 @@ func despawn_spirit() -> void:
 func player_near_spirit(p: Vector2) -> bool:
 	if not spirit_node:
 		return false
-	return p.distance_to(spirit_pos) < 40.0
+	return p.distance_to(spirit_pos) < 60.0

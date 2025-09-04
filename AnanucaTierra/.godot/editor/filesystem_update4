@@ -1,0 +1,8 @@
+res://scenes/Player.tscn
+res://scripts/Player.gd
+res://scripts/HUD.gd
+res://scenes/World.tscn
+res://scenes/Game.tscn
+res://scripts/World.gd
+res://scripts/Game.gd
+res://scripts/Inventory.gd

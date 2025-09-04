@@ -4,7 +4,7 @@ extends Node
 var items := {
 		"piedra": 0,
 		"tierra": 0,
-		"semilla_ananuca": 3,
+		"semilla_ananuca": 6,
 		"flor_ananuca": 0
 }
 

@@ -21,7 +21,7 @@ func _process(delta):
 func _is_night():
 	var world = get_node_or_null("../World")
 	if world:
-		return world.current_time > world.day_length * 0.75
+		return world.current_time > world.day_length * 0.50
 	return false
 
 func _ready():
