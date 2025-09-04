@@ -1,11 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://dj4sua4qbpy3c"]
+[gd_scene load_steps=3 format=3 uid="uid://dj4sua4qbpy3c"]
 
 [ext_resource type="Script" uid="uid://cq3cmonhi66p0" path="res://scripts/Game.gd" id="1"]
 [ext_resource type="Script" uid="uid://7ictudp36k35" path="res://scripts/HUD.gd" id="2_qbsmt"]
-[ext_resource type="Script" uid="uid://cpvqxc6uw603g" path="res://scripts/Inventory.gd" id="3_cpr0p"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1")
+time_of_day = null
+time_scale_hours_per_sec = null
+required_flowers = null
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 
@@ -44,6 +46,3 @@ offset_bottom = 23.0
 [node name="ObjectiveLabel" type="Label" parent="HUD"]
 offset_right = 40.0
 offset_bottom = 23.0
-
-[node name="Inventory" type="Node" parent="."]
-script = ExtResource("3_cpr0p")

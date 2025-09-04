@@ -10,7 +10,7 @@ extends CanvasLayer
 # Ejemplo de conexión de señales desde World.gd
 # world.connect("day_changed", self, "update_day")
 # world.connect("season_changed", self, "update_season")
-# world.connect("time_updated", self, "update_time")
+# world.connect("time_updated", self, "sdupdate_time")
 # Para inventario y objetivo, llama directamente:
 # update_inventory(inventory.items)
 # update_objective(flores_florecidas, objetivo)

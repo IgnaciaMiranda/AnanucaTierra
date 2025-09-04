@@ -3,8 +3,8 @@ extends Node2D
 # ─────────────────────────────────────────────────────────────────────────────
 # Constantes y tipos
 # ─────────────────────────────────────────────────────────────────────────────
-enum Slot { PICKAXE = 1, DIRT = 2, HOE = 3, SEEDS = 4 }
-enum Quest { START, NIGHT_SPIRIT, COMPLETE }
+enum Slot {PICKAXE = 1, DIRT = 2, HOE = 3, SEEDS = 4}
+enum Quest {START, NIGHT_SPIRIT, COMPLETE}
 
 const ITEM_DIRT := "tierra"
 const ITEM_SEED_ANANUCA := "semilla_ananuca"
@@ -12,11 +12,11 @@ const ITEM_FLOWER_ANANUCA := "flor_ananuca"
 const ITEM_STONE := "piedra"
 
 const DAWN_START := 5.5
-const DAY_FULL   := 7.0
+const DAY_FULL := 7.0
 const DUSK_START := 18.0
-const NIGHT_START:= 20.0
+const NIGHT_START := 20.0
 const NIGHT_BRIGHTNESS := 0.5
-const DAY_BRIGHTNESS   := 1.0
+const DAY_BRIGHTNESS := 1.0
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Tuning desde el editor
@@ -37,12 +37,9 @@ const DAY_BRIGHTNESS   := 1.0
 # ─────────────────────────────────────────────────────────────────────────────
 var world: Node
 var player: Node
-var inventory: Dictionary = {
-	ITEM_DIRT: 0,
-	ITEM_SEED_ANANUCA: 3,
-	ITEM_FLOWER_ANANUCA: 0,
-	ITEM_STONE: 0
-}
+
+# Usar el nodo Inventory como inventario principal
+@onready var inventory_node = get_node("./Inventory")
 var selected_slot: int = Slot.PICKAXE
 var quest_state: int = Quest.START
 
@@ -53,7 +50,6 @@ func _ready() -> void:
 	# Crea mundo y jugador
 	world = load("res://scenes/World.tscn").instantiate()
 	add_child(world)
-
 	player = load("res://scenes/Player.tscn").instantiate()
 	add_child(player)
 	
@@ -61,10 +57,13 @@ func _ready() -> void:
 	if "get_spawn_position" in world:
 		var spawn_pos: Vector2 = world.get_spawn_position()
 		player.global_position = spawn_pos
-	
+
 	# FIXED: También separar esta verificación
-	if "inventory_ref" in player:
-		player.inventory_ref = inventory
+	if inventory_node == null:
+		push_warning("Inventory node not found! Some features may not work.")
+	else:
+		if "inventory_ref" in player:
+			player.inventory_ref = inventory_node.items
 
 	# Conectar señales de World al HUD
 	var hud = $HUD
@@ -121,13 +120,13 @@ func _on_use_tool(pos: Vector2, primary: bool) -> void:
 				return
 			var got: String = world.mine(cell)
 			if got != "":
-				inventory[got] = int(inventory.get(got, 0)) + 1
+				inventory_node.add_item(got, 1)
 
 		Slot.DIRT:
 			if !"place" in world:
 				return
-			if int(inventory.get(ITEM_DIRT, 0)) > 0 and world.place(cell, ITEM_DIRT):
-				inventory[ITEM_DIRT] = int(inventory[ITEM_DIRT]) - 1
+			if inventory_node.get_count(ITEM_DIRT) > 0 and world.place(cell, ITEM_DIRT):
+				inventory_node.remove_item(ITEM_DIRT, 1)
 
 		Slot.HOE:
 			if "till" in world:
@@ -136,8 +135,8 @@ func _on_use_tool(pos: Vector2, primary: bool) -> void:
 		Slot.SEEDS:
 			if !"plant" in world:
 				return
-			if int(inventory.get(ITEM_SEED_ANANUCA, 0)) > 0 and world.plant(cell, "ananuca"):
-				inventory[ITEM_SEED_ANANUCA] = int(inventory[ITEM_SEED_ANANUCA]) - 1
+			if inventory_node.get_count(ITEM_SEED_ANANUCA) > 0 and world.plant(cell, "ananuca"):
+				inventory_node.remove_item(ITEM_SEED_ANANUCA, 1)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # UI / HUD
@@ -145,9 +144,9 @@ func _on_use_tool(pos: Vector2, primary: bool) -> void:
 func _update_hud() -> void:
 	info_label.text = "Hora: %.2f  |  [1] Pico  [2] Tierra(%d)  [3] Azadón  [4] Semillas(%d)  |  Añañucas(%d)" % [
 		time_of_day,
-		int(inventory.get(ITEM_DIRT, 0)),
-		int(inventory.get(ITEM_SEED_ANANUCA, 0)),
-		int(inventory.get(ITEM_FLOWER_ANANUCA, 0))
+		inventory_node.get_count(ITEM_DIRT),
+		inventory_node.get_count(ITEM_SEED_ANANUCA),
+		inventory_node.get_count(ITEM_FLOWER_ANANUCA)
 	]
 	quest_label.text = _quest_text()
 
@@ -174,9 +173,9 @@ func _update_quest() -> void:
 					world.spawn_spirit()
 		Quest.NIGHT_SPIRIT:
 			if "player_near_spirit" in world and world.player_near_spirit(player.global_position):
-				var have: int = int(inventory.get(ITEM_FLOWER_ANANUCA, 0))
+				var have: int = inventory_node.get_count(ITEM_FLOWER_ANANUCA)
 				if have >= required_flowers:
-					inventory[ITEM_FLOWER_ANANUCA] = have - required_flowers
+					inventory_node.remove_item(ITEM_FLOWER_ANANUCA, required_flowers)
 					quest_state = Quest.COMPLETE
 
 # ─────────────────────────────────────────────────────────────────────────────

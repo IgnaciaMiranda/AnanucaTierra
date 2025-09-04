@@ -2,10 +2,10 @@ extends Node
 
 # Inventario simple
 var items := {
-	"piedra": 0,
-	"tierra": 0,
-	"semilla_ananuca": 0,
-	"flor_ananuca": 0
+		"piedra": 0,
+		"tierra": 0,
+		"semilla_ananuca": 3,
+		"flor_ananuca": 0
 }
 
 func add_item(item_name: String, amount: int = 1):

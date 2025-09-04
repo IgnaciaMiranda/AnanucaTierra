@@ -48,18 +48,7 @@ func _process(delta):
 	_update_animation()
 
 func _update_animation():
-	if is_on_floor():
-		if velocity.x == 0:
-			anim_sprite.play("idle")
-		elif abs(velocity.x) > 200:
-			anim_sprite.play("run")
-		else:
-			anim_sprite.play("walk")
-	else:
-		if velocity.y < 0:
-			anim_sprite.play("jump")
-		elif velocity.y > 0:
-			anim_sprite.play("fall")
+	return
 
 # Ejemplo para daño y muerte (debes llamar estas funciones cuando corresponda)
 func play_hurt():
@@ -85,3 +74,7 @@ func _init_collision() -> void:
 	# La colisión igual al sprite
 	rect.size = Vector2(sprite_size)
 	col.shape = rect
+
+func add_seeds(amount: int):
+	if inventory_ref.has("semilla_ananuca"):
+		inventory_ref["semilla_ananuca"] += amount

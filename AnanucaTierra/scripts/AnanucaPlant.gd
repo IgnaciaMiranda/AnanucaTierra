@@ -41,3 +41,10 @@ func advance_growth():
 		state = "florecida"
 	emit_signal("grew", state)
 	needs_water = true
+
+# Permite recolectar la planta adulta/florecida y dar 2 semillas al jugador
+func collect(player):
+	if state == "adulta" or state == "florecida":
+		if player and player.has_method("add_seeds"):
+			player.add_seeds(2)
+		queue_free()
